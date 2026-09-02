@@ -1,3 +1,81 @@
+// Computes the nearest upcoming scheduled dose from the user's schedules,
+// so the pill-box panel can show a live countdown + idle/alerting state
+// (paper section 5.2: idle/alert/detection/timeout states).
+function findNextDose(schedules) {
+    const dayMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    const now = new Date();
+    let best = null;
+
+    schedules.forEach(sched => {
+        const days = (sched.days_of_week || '').split(',').map(d => {
+            const t = d.trim();
+            return t ? t.charAt(0).toUpperCase() + t.substring(1, 3).toLowerCase() : '';
+        });
+        const [h, m] = sched.schedule_time.split(':').map(Number);
+
+        for (let offset = 0; offset < 8; offset++) {
+            const candidate = new Date(now);
+            candidate.setDate(now.getDate() + offset);
+            candidate.setHours(h, m, 0, 0);
+
+            const dayName = Object.keys(dayMap).find(k => dayMap[k] === candidate.getDay());
+            if (!days.includes(dayName)) continue;
+            if (candidate <= now) continue;
+
+            const startOk = !sched.start_date || new Date(sched.start_date) <= candidate;
+            const endOk = !sched.end_date || new Date(sched.end_date) >= candidate;
+            if (!startOk || !endOk) continue;
+
+            if (!best || candidate < best.time) {
+                best = { time: candidate, medicine_name: sched.medicine_name, dosage: sched.dosage };
+            }
+            break;
+        }
+    });
+
+    return best;
+}
+
+// Renders the live status card: current state chip + next-dose countdown.
+// "Alerting" state = within 2 minutes of a scheduled dose (matches how
+// close the reminder engine's own check granularity is on the backend).
+async function refreshPillBoxStatusCard() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.id) return;
+
+    const stateChip = document.getElementById('pillbox_state_chip');
+    const nextDoseText = document.getElementById('pillbox_next_dose');
+    if (!stateChip || !nextDoseText) return;
+
+    try {
+        const schedules = await apiCall(`/my-schedules?user_id=${user.id}`);
+        const next = findNextDose(schedules);
+
+        if (!next) {
+            stateChip.innerHTML = statusChip('idle');
+            nextDoseText.textContent = 'No upcoming doses scheduled.';
+            return;
+        }
+
+        const msUntil = next.time - new Date();
+        const minsUntil = Math.round(msUntil / 60000);
+
+        if (minsUntil <= 2) {
+            stateChip.innerHTML = statusChip('alerting');
+        } else {
+            stateChip.innerHTML = statusChip('idle');
+        }
+
+        const dosagePart = next.dosage ? ` (${next.dosage})` : '';
+        nextDoseText.textContent =
+            `${next.medicine_name}${dosagePart} — ${next.time.toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })} (in ${minsUntil} min)`;
+    } catch (error) {
+        console.error('Could not refresh pill-box status card:', error);
+    }
+}
+
+setInterval(refreshPillBoxStatusCard, 30000);
+
 // Load dashboard data
 async function loadDashboard() {
     try {
@@ -92,6 +170,7 @@ if (typeof io === 'function' && window.ENABLE_SOCKET_IO) {
 }
 // Load on page load
 loadDashboard();
+refreshPillBoxStatusCard();
 
 // Smart Pill Box Simulation Handler (Flowchart Logic)
 async function runPillBoxSimulation() {

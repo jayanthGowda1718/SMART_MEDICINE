@@ -62,30 +62,43 @@
                 </tbody>
             </table>
 
-            <!-- Smart Pill Box Load Cell Telemetry Simulator Panel (Research Paper Flowchart) -->
+            <!-- Smart Pill Box Live Status Card (Research Paper System State) -->
             <section style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1;">
-                <h3 style="margin-top:0; color:#1e293b;">⚖️ Smart Pill Box Detection System (Load Cell Telemetry)</h3>
-                <p style="color:#64748b; font-size:14px;">Simulate real-time weight change detection ($\Delta W = W_{before} - W_{after}$) from the ESP32 + Load Cell sensor based on your research paper workflow.</p>
-                
-                <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center; margin-bottom:15px;">
-                    <div>
-                        <label style="font-weight:600; display:block; font-size:13px; color:#475569;">Initial Weight (g):</label>
-                        <input type="number" id="sim_weight_before" value="150.0" step="0.1" style="padding:8px; width:120px; border-radius:6px; border:1px solid #cbd5e1;">
-                    </div>
-                    <div>
-                        <label style="font-weight:600; display:block; font-size:13px; color:#475569;">After Weight (g):</label>
-                        <input type="number" id="sim_weight_after" value="145.0" step="0.1" style="padding:8px; width:120px; border-radius:6px; border:1px solid #cbd5e1;">
-                    </div>
-                    <div>
-                        <label style="font-weight:600; display:block; font-size:13px; color:#475569;">Threshold (g):</label>
-                        <input type="number" id="sim_threshold" value="0.5" step="0.1" style="padding:8px; width:100px; border-radius:6px; border:1px solid #cbd5e1;">
-                    </div>
-                    <div style="align-self:flex-end;">
-                        <button onclick="runPillBoxSimulation()" style="padding:10px 20px; background:#2563eb; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">⚡ Test Load Cell Telemetry</button>
-                    </div>
+                <h3 style="margin-top:0; color:#1e293b;">⚖️ Smart Pill Box Status</h3>
+
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+                    <span style="font-weight:600; color:#475569;">Current State:</span>
+                    <span id="pillbox_state_chip"><span class="status-chip status-idle">Idle</span></span>
                 </div>
-                
-                <div id="sim_result" style="padding:12px; border-radius:6px; display:none; font-weight:600;"></div>
+
+                <div style="margin-bottom:15px; color:#334155;">
+                    <strong>Next Dose:</strong> <span id="pillbox_next_dose">Loading...</span>
+                </div>
+
+                <div id="sim_result" style="padding:12px; border-radius:6px; display:none; font-weight:600; margin-bottom:10px;"></div>
+
+                <details style="margin-top:10px;">
+                    <summary style="cursor:pointer; font-weight:600; color:#667eea;">🔧 Simulate hardware event (dev/testing)</summary>
+                    <p style="color:#64748b; font-size:14px; margin-top:10px;">Manually simulate a weight-sensor telemetry event (ΔW = W_before − W_after) — this is what the ESP32 + Load Cell will send automatically once hardware is connected.</p>
+
+                    <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center; margin-bottom:15px;">
+                        <div>
+                            <label style="font-weight:600; display:block; font-size:13px; color:#475569;">Initial Weight (g):</label>
+                            <input type="number" id="sim_weight_before" value="150.0" step="0.1" style="padding:8px; width:120px; border-radius:6px; border:1px solid #cbd5e1;">
+                        </div>
+                        <div>
+                            <label style="font-weight:600; display:block; font-size:13px; color:#475569;">After Weight (g):</label>
+                            <input type="number" id="sim_weight_after" value="145.0" step="0.1" style="padding:8px; width:120px; border-radius:6px; border:1px solid #cbd5e1;">
+                        </div>
+                        <div>
+                            <label style="font-weight:600; display:block; font-size:13px; color:#475569;">Threshold (g):</label>
+                            <input type="number" id="sim_threshold" value="0.5" step="0.1" style="padding:8px; width:100px; border-radius:6px; border:1px solid #cbd5e1;">
+                        </div>
+                        <div style="align-self:flex-end;">
+                            <button onclick="runPillBoxSimulation()" style="padding:10px 20px; background:#2563eb; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">⚡ Test Load Cell Telemetry</button>
+                        </div>
+                    </div>
+                </details>
             </section>
         </main>
     </div>
@@ -93,7 +106,7 @@
     <script src="js/config.js?v=3"></script>
     <script>checkAuth();</script>
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-    <script src="js/dashboard.js?v=3"></script>
+    <script src="js/dashboard.js?v=4"></script>
     <script src="js/medicine-bot.js?v=3"></script>
     
 </body>
