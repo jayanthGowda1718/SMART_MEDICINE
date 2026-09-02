@@ -16,15 +16,13 @@ async function loadLogs() {
         
         logs.forEach(log => {
             const row = tbody.insertRow();
-            const statusClass = log.status === 'taken' ? 'success' : 
-                               log.status === 'missed' ? 'error' : '';
             row.innerHTML = `
                 <td>${log.id}</td>
                 <td>${log.user_id}</td>
                 <td>${log.medicine_id}</td>
                 <td>${log.scheduled_time}</td>
                 <td>${log.actual_time || 'N/A'}</td>
-                <td><span class="alert alert-${statusClass}">${log.status}</span></td>
+                <td>${statusChip(log.status)}</td>
             `;
         });
         

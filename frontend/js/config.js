@@ -1,4 +1,4 @@
-﻿// API Configuration
+// API Configuration
 const API_BASE_URL = 'http://127.0.0.1:5000';
 
 // Helper function to make API calls
@@ -108,6 +108,16 @@ async function logout() {
     localStorage.removeItem('user');
     localStorage.removeItem('isLoggedIn');
     window.location.href = 'login.html';
+}
+
+// Shared status → color chip renderer (Green=Taken, Red=Missed, Yellow=Pending)
+// Used across logs.html, dashboard.js, and the pill-box panel so the
+// paper's traffic-light convention (section 7.2) stays consistent everywhere.
+function statusChip(status) {
+    const normalized = (status || 'pending').toLowerCase();
+    const className = `status-${normalized}`;
+    const label = normalized.charAt(0).toUpperCase() + normalized.slice(1);
+    return `<span class="status-chip ${className}">${label}</span>`;
 }
 
 // ============================================================

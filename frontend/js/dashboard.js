@@ -116,14 +116,12 @@ async function runPillBoxSimulation() {
         });
 
         resultDiv.style.display = 'block';
+        resultDiv.style.background = 'transparent';
+        resultDiv.style.color = 'inherit';
         if (response.verified) {
-            resultDiv.style.background = '#dcfce7';
-            resultDiv.style.color = '#166534';
-            resultDiv.innerHTML = `🟢 Dose Confirmed (Taken)! Detected weight reduction ΔW = ${response.delta_weight.toFixed(2)}g (≥ threshold ${threshold}g). Logged via Weight Sensor.`;
+            resultDiv.innerHTML = `${statusChip('taken')} Detected weight reduction ΔW = ${response.delta_weight.toFixed(2)}g (≥ threshold ${threshold}g). Logged via Weight Sensor.`;
         } else {
-            resultDiv.style.background = '#fee2e2';
-            resultDiv.style.color = '#991b1b';
-            resultDiv.innerHTML = `🔴 Missed Dose Alert! No sufficient weight reduction detected (ΔW = ${response.delta_weight.toFixed(2)}g < threshold ${threshold}g). Caregiver alert sent.`;
+            resultDiv.innerHTML = `${statusChip('missed')} No sufficient weight reduction detected (ΔW = ${response.delta_weight.toFixed(2)}g < threshold ${threshold}g). Caregiver alert sent.`;
         }
         
         // Refresh dashboard metrics
