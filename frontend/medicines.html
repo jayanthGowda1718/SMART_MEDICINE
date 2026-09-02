@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Medicines - Smart Medicine Reminder</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Smart Medicine Reminder</h1>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="users.html">Users</a>
+                <a href="medicines.html">Medicines</a>
+                <a href="schedules.html">Schedules</a>
+                <a href="notifications.html">Notifications</a>
+                <a href="logs.html">Logs</a>
+                <a href="doctor.html">Doctor</a>
+                <a href="messages.html">Messages</a>
+                <a href="appointments.html">Appointments</a>
+                <span id="userInfo" style="color:white; margin-left:auto; margin-right:15px;"></span>
+                <button onclick="logout()" style="padding:8px 16px; font-size:14px; background:#f5576c;">Logout</button>
+            </nav>
+        </header>
+        
+
+        <main>
+            <h2>Manage Medicines</h2>
+
+            <!-- Add Medicine Form -->
+            <div class="form-container">
+                <h3>Add New Medicine</h3>
+                <form id="addMedicineForm">
+                    <div class="form-group">
+                        <label for="user_id">User:</label>
+                        <select id="user_id" required>
+                            <option value="">Select User</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="med_name">Medicine Name:</label>
+                        <input type="text" id="med_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dosage">Dosage:</label>
+                        <input type="text" id="dosage" placeholder="e.g., 500mg" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="instructions">Instructions:</label>
+                        <textarea id="instructions" rows="3" placeholder="e.g., Take with food" required></textarea>
+                    </div>
+                    <button type="submit">Add Medicine</button>
+                </form>
+            </div>
+
+            <!-- Medicines Table -->
+            <h3>All Medicines</h3>
+            <table id="medicinesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Dosage</th>
+                        <th>Instructions</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6" class="loading">Loading medicines...</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Edit Medicine Modal -->
+            <div id="editMedicineModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+                <div style="position:relative; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:30px; border-radius:10px; max-width:500px; width:90%;">
+                    <h3>Edit Medicine</h3>
+                    <form id="editMedicineForm">
+                        <input type="hidden" id="edit_medicine_id">
+                        <div class="form-group">
+                            <label for="edit_med_name">Medicine Name:</label>
+                            <input type="text" id="edit_med_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_dosage">Dosage:</label>
+                            <input type="text" id="edit_dosage" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_instructions">Instructions:</label>
+                            <textarea id="edit_instructions" rows="3" required></textarea>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:20px;">
+                            <button type="submit">Update Medicine</button>
+                            <button type="button" onclick="closeEditMedicineModal()" class="btn-sm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/config.js?v=2"></script>
+    <script>checkAuth();</script>s
+    <script src="js/medicines.js"></script>
+    <script src="js/medicine-bot.js?v=3"></script>
+</body>
+</html>

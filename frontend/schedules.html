@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Schedules - Smart Medicine Reminder</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Smart Medicine Reminder</h1>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="users.html">Users</a>
+                <a href="medicines.html">Medicines</a>
+                <a href="schedules.html">Schedules</a>
+                <a href="notifications.html">Notifications</a>
+                <a href="logs.html">Logs</a>
+                <a href="doctor.html">Doctor</a>
+                <a href="messages.html">Messages</a>
+                <a href="appointments.html">Appointments</a>
+                <span id="userInfo" style="color:white; margin-left:auto; margin-right:15px;"></span>
+                <button onclick="logout()" style="padding:8px 16px; font-size:14px; background:#f5576c;">Logout</button>
+            </nav>
+        </header>
+
+
+        <main>
+            <h2>Manage Schedules</h2>
+
+            <!-- Add Schedule Form -->
+            <div class="form-container">
+                <h3>Add New Schedule</h3>
+                <form id="addScheduleForm">
+                    <div class="form-group">
+                        <label for="user_id">User:</label>
+                        <select id="user_id" required>
+                            <option value="">Select User</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="medicine_id">Medicine:</label>
+                        <select id="medicine_id" required>
+                            <option value="">Select Medicine</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule_time">Time:</label>
+                        <input type="time" id="schedule_time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="days_of_week">Days of Week:</label>
+                        <input type="text" id="days_of_week" placeholder="e.g., Mon,Wed,Fri" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="start_date">Start Date:</label>
+                        <input type="date" id="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">End Date (optional):</label>
+                        <input type="date" id="end_date">
+                    </div>
+                    <button type="submit">Add Schedule</button>
+                </form>
+            </div>
+
+            <!-- Schedules Table -->
+            <h3>All Schedules</h3>
+            <table id="schedulesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Medicine ID</th>
+                        <th>Time</th>
+                        <th>Days</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="8" class="loading">Loading schedules...</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Edit Schedule Modal -->
+            <div id="editScheduleModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+                <div style="position:relative; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:30px; border-radius:10px; max-width:500px; width:90%;">
+                    <h3>Edit Schedule</h3>
+                    <form id="editScheduleForm">
+                        <input type="hidden" id="edit_schedule_id">
+                        <div class="form-group">
+                            <label for="edit_schedule_time">Time:</label>
+                            <input type="time" id="edit_schedule_time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_days_of_week">Days of Week:</label>
+                            <input type="text" id="edit_days_of_week" placeholder="e.g., Mon,Wed,Fri" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_start_date">Start Date:</label>
+                            <input type="date" id="edit_start_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_end_date">End Date (optional):</label>
+                            <input type="date" id="edit_end_date">
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:20px;">
+                            <button type="submit">Update Schedule</button>
+                            <button type="button" onclick="closeEditScheduleModal()" class="btn-sm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/config.js?v=2"></script>
+    <script>checkAuth();</script>
+    <script src="js/schedules.js"></script>
+    <script src="js/medicine-bot.js?v=3"></script>
+</body>
+</html>

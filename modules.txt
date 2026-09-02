@@ -1,0 +1,13 @@
+User Management: Handles registration, authentication, and user roles (patient, caregiver, doctor).​
+
+Medication Scheduling: Stores medicine names, dosages, schedules, and durations as input by users/caregivers.​
+
+Reminder Engine: Sends timely notifications/alerts to patients based on schedule; supports voice, app, SMS, and device-based reminders.​
+
+Intake Logging System: Confirms medication intake using sensor data, app button press, or voice command and logs the result securely.​
+
+Notification Manager: Delivers missed dose alerts to caregivers and doctors, manages secure messaging, and integrates external services (Twilio, Alexa).​
+
+Reporting/Analytics: Generates adherence reports and usage analytics for tracking and medical review.​
+
+AI/Adaptive Module (Optional for MVP): Uses machine learning algorithms to predict or adapt reminders based on habits and risk factors.

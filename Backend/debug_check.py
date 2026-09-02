@@ -1,0 +1,7 @@
+﻿content = open("app.py", encoding="utf-8").read()
+print("import anchor found:", "from datetime import datetime, timedelta" in content)
+print("start anchor found:", "start_reminder_engine()" in content)
+print("main anchor found:", "if __name__ == " + chr(39) + "__main__" + chr(39) + ":" in content)
+print("already has import:", "chatbot_logic import" in content)
+print("already has loader:", "load_chatbot_model()" in content)
+print("already has route:", "def chatbot_reply" in content)

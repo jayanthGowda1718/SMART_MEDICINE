@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intake Logs - Smart Medicine Reminder</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Smart Medicine Reminder</h1>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="users.html">Users</a>
+                <a href="medicines.html">Medicines</a>
+                <a href="schedules.html">Schedules</a>
+                <a href="notifications.html">Notifications</a>
+                <a href="logs.html">Logs</a>
+                <a href="doctor.html">Doctor</a>
+                <a href="messages.html">Messages</a>
+                <a href="appointments.html">Appointments</a>
+                <span id="userInfo" style="color:white; margin-left:auto; margin-right:15px;"></span>
+                <button onclick="logout()" style="padding:8px 16px; font-size:14px; background:#f5576c;">Logout</button>
+            </nav>
+        </header>
+        
+        
+        <main>
+            <h2>Intake Logs</h2>
+            
+            <!-- Logs Table -->
+            <table id="logsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Medicine ID</th>
+                        <th>Scheduled Time</th>
+                        <th>Actual Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="6" class="loading">Loading logs...</td></tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+    
+    <script src="js/config.js?v=2"></script>
+    <script>checkAuth();</script>
+    <script src="js/logs.js"></script>
+    <script src="js/medicine-bot.js?v=3"></script>
+</body>
+</html>

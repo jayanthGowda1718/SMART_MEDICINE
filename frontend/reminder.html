@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Medicine Reminder - Smart Medicine Reminder</title>
+  <link rel="stylesheet" href="css/style.css?v=2" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+      color: #333;
+      margin: 0;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #d84315;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    #details {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 500px;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    button {
+      background: #43a047;
+      color: white;
+      border: none;
+      font-size: 18px;
+      padding: 10px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #2e7d32;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      #details {
+        font-size: 16px;
+        width: 90%;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>💊 Time to Take Your Medicine!</h1>
+  <div id="details"></div>
+
+  <audio id="alertSound" src="sounds/alert.mp3" autoplay loop></audio>
+
+  <button onclick="confirmTaken()">Mark as Taken ✅</button>
+
+  <script src="js/config.js?v=2"></script>
+  <script>
+    // The reminder now comes from a server-generated Notification
+    // (see the reminder engine in app.py) — not from the browser
+    // guessing the time itself.
+    const reminder = JSON.parse(localStorage.getItem('activeReminder'));
+
+    if (reminder) {
+      document.getElementById('details').innerHTML = `
+        <p>${reminder.message}</p>
+        <p>Stay healthy and consistent ❤️</p>
+      `;
+    } else {
+      document.getElementById('details').innerHTML = '<p>No active reminder found.</p>';
+    }
+
+    function stopAlert() {
+      document.getElementById('alertSound').pause();
+      window.close();
+    }
+
+    async function confirmTaken() {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+          const logs = await apiCall(`/my-intake-logs?user_id=${user.id}`);
+          const pending = (logs || [])
+            .filter(l => l.status === 'pending')
+            .sort((a, b) => new Date(b.scheduled_time) - new Date(a.scheduled_time));
+          if (pending.length) {
+            await apiCall(`/intake_logs/${pending[0].id}/confirm`, 'PUT');
+          }
+        }
+      } catch (e) {
+        console.error('Could not confirm dose:', e);
+      } finally {
+        stopAlert();
+      }
+    }
+
+    // Safety: Automatically stop sound after 3 minutes
+    setTimeout(() => {
+      stopAlert();
+    }, 180000);
+  </script>
+  <script src="js/medicine-bot.js?v=3"></script>
+</body>
+</html>

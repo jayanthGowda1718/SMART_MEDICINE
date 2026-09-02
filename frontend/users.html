@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Family - Smart Medicine Reminder</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Smart Medicine Reminder</h1>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="users.html">Family</a>
+                <a href="medicines.html">Medicines</a>
+                <a href="schedules.html">Schedules</a>
+                <a href="notifications.html">Notifications</a>
+                <a href="logs.html">Logs</a>
+                <a href="doctor.html">Doctor</a>
+                <a href="messages.html">Messages</a>
+                <a href="appointments.html">Appointments</a>
+                <span id="userInfo" style="color:white; margin-left:auto; margin-right:15px;"></span>
+                <button onclick="logout()" style="padding:8px 16px; font-size:14px; background:#f5576c;">Logout</button>
+            </nav>
+        </header>
+        
+        <main>
+            <h2>👨‍👩‍👧‍👦 My Family Members</h2>
+            
+            <div style="background: #e3f2fd; border: 1px solid #2196f3; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <strong>💡 Family Management:</strong> Add and manage your family members here. Only you can see and manage your family members. Each person's data (medicines, schedules) is kept private.
+            </div>
+            
+            <!-- Add Family Member Form -->
+            <div class="form-container">
+                <h3>Add Family Member</h3>
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" placeholder="e.g., Jane Smith (Mother)" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Role:</label>
+                        <select id="role" required>
+                            <option value="">Select Role</option>
+                            <option value="patient">Patient (Family Member)</option>
+                            <option value="caregiver">Caregiver (Helper)</option>
+                            <option value="doctor">Doctor (Healthcare Provider)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_info">Contact Info:</label>
+                        <input type="text" id="contact_info" placeholder="Phone number or address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" placeholder="email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" placeholder="Create a password" required>
+                    </div>
+                    <button type="submit">Add Family Member</button>
+                </form>
+            </div>
+
+            <!-- Family Members Table -->
+            <h3>My Family & Dependents</h3>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Contact</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6" class="loading">Loading your family members...</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Edit User Modal -->
+            <div id="editUserModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+                <div style="position:relative; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:30px; border-radius:10px; max-width:500px; width:90%;">
+                    <h3>Edit Family Member</h3>
+                    <form id="editUserForm">
+                        <input type="hidden" id="edit_user_id">
+                        <div class="form-group">
+                            <label for="edit_name">Name:</label>
+                            <input type="text" id="edit_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_role">Role:</label>
+                            <select id="edit_role" required>
+                                <option value="patient">Patient</option>
+                                <option value="caregiver">Caregiver</option>
+                                <option value="doctor">Doctor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_contact_info">Contact Info:</label>
+                            <input type="text" id="edit_contact_info" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_email">Email:</label>
+                            <input type="email" id="edit_email" required>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:20px;">
+                            <button type="submit">Update</button>
+                            <button type="button" onclick="closeEditUserModal()" class="btn-sm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/config.js?v=2"></script>
+    <script>checkAuth();</script>
+    <script src="js/users.js"></script>
+    <script src="js/medicine-bot.js?v=3"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Medicine Reminder - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Smart Medicine Reminder</h1>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="users.html">Users</a>
+                <a href="medicines.html">Medicines</a>
+                <a href="schedules.html">Schedules</a>
+                <a href="notifications.html">Notifications</a>
+                <a href="logs.html">Logs</a>
+                <a href="doctor.html">Doctor</a>
+                <a href="messages.html">Messages</a>
+                <a href="appointments.html">Appointments</a>
+                <span id="userInfo" style="color:white; margin-left:auto; margin-right:15px;"></span>
+                <button onclick="logout()" style="padding:8px 16px; font-size:14px; background:#f5576c;">Logout</button>
+            </nav>
+        </header>
+        
+        
+        <main>
+            <h2>Dashboard Overview</h2>
+            
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h3>Total Users</h3>
+                    <div class="number" id="totalUsers">0</div>
+                </div>
+                <div class="card">
+                    <h3>Medicines</h3>
+                    <div class="number" id="totalMedicines">0</div>
+                </div>
+                <div class="card">
+                    <h3>Active Schedules</h3>
+                    <div class="number" id="totalSchedules">0</div>
+                </div>
+                <div class="card">
+                    <h3>Notifications</h3>
+                    <div class="number" id="totalNotifications">0</div>
+                </div>
+            </div>
+            
+            <h3>Recent Activity</h3>
+            <table id="recentActivity">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Details</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="3" class="loading">Loading...</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Smart Pill Box Load Cell Telemetry Simulator Panel (Research Paper Flowchart) -->
+            <section style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1;">
+                <h3 style="margin-top:0; color:#1e293b;">⚖️ Smart Pill Box Detection System (Load Cell Telemetry)</h3>
+                <p style="color:#64748b; font-size:14px;">Simulate real-time weight change detection ($\Delta W = W_{before} - W_{after}$) from the ESP32 + Load Cell sensor based on your research paper workflow.</p>
+                
+                <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center; margin-bottom:15px;">
+                    <div>
+                        <label style="font-weight:600; display:block; font-size:13px; color:#475569;">Initial Weight (g):</label>
+                        <input type="number" id="sim_weight_before" value="150.0" step="0.1" style="padding:8px; width:120px; border-radius:6px; border:1px solid #cbd5e1;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; display:block; font-size:13px; color:#475569;">After Weight (g):</label>
+                        <input type="number" id="sim_weight_after" value="145.0" step="0.1" style="padding:8px; width:120px; border-radius:6px; border:1px solid #cbd5e1;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600; display:block; font-size:13px; color:#475569;">Threshold (g):</label>
+                        <input type="number" id="sim_threshold" value="0.5" step="0.1" style="padding:8px; width:100px; border-radius:6px; border:1px solid #cbd5e1;">
+                    </div>
+                    <div style="align-self:flex-end;">
+                        <button onclick="runPillBoxSimulation()" style="padding:10px 20px; background:#2563eb; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">⚡ Test Load Cell Telemetry</button>
+                    </div>
+                </div>
+                
+                <div id="sim_result" style="padding:12px; border-radius:6px; display:none; font-weight:600;"></div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="js/config.js?v=2"></script>
+    <script>checkAuth();</script>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="js/dashboard.js?v=2"></script>
+    <script src="js/medicine-bot.js?v=3"></script>
+    
+</body>
+</html>

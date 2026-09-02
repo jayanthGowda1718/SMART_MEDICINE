@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Smart Medicine Reminder</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .signup-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .signup-box { background: white; padding: 32px; border-radius: 12px; width:100%; max-width:520px; box-shadow:0 10px 40px rgba(0,0,0,0.25);} 
+        .signup-box h1{ text-align:center; color:#667eea; margin-bottom:16px }
+        .form-grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px }
+        .full { grid-column: 1 / -1 }
+        .signup-box .form-group { margin-bottom:12px }
+        .input-error { border-color: #f5576c !important; box-shadow: 0 0 0 3px rgba(245,87,108,0.06); }
+        .error-message { color: #f5576c; font-size:12px; margin-top:6px; }
+        .server-error { background:#ffe6e9; color:#a8000f; padding:10px; border-radius:6px; margin-bottom:12px; }
+        .muted { color:#777; font-size:13px }
+        .signup-box button{ width:100%; padding:10px; font-size:15px }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-box">
+            <h1>🔐 Create an Account</h1>
+            <p style="text-align:center; color:#666; margin-bottom:16px">Create a new user account for the Smart Medicine Reminder system</p>
+
+            <form id="signupForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Full name</label>
+                        <input id="name" type="text" placeholder="Jane Doe" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">Role</label>
+                        <select id="role" required>
+                            <option value="patient">Patient</option>
+                            <option value="caregiver">Caregiver</option>
+                            <option value="doctor">Doctor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="contact">Contact info</label>
+                        <input id="contact" type="text" placeholder="Phone or address (optional)">
+                        <div id="contactError" class="error-message" style="display:none"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input id="email" type="email" placeholder="you@example.com" required>
+                        <div id="emailError" class="error-message" style="display:none"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input id="password" type="password" placeholder="Choose a password" required>
+                        <div id="passwordError" class="error-message" style="display:none"></div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="confirm">Confirm password</label>
+                        <input id="confirm" type="password" placeholder="Confirm password" required>
+                        <div id="confirmError" class="error-message" style="display:none"></div>
+                    </div>
+                </div>
+
+                <div id="serverError" class="server-error" style="display:none"></div>
+                <button type="submit" id="signupSubmit" disabled>Create Account</button>
+            </form>
+
+            <div style="text-align:center; margin-top:14px; color:#666;">
+                Already have an account? <a href="login.html" style="color:#667eea; font-weight:600; text-decoration:none">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js?v=2"></script>
+    <script>
+        // Inline validation helpers
+        const signupForm = document.getElementById('signupForm');
+        const submitBtn = document.getElementById('signupSubmit');
+        const emailEl = document.getElementById('email');
+        const contactEl = document.getElementById('contact');
+        const passwordEl = document.getElementById('password');
+        const confirmEl = document.getElementById('confirm');
+        const serverErrorEl = document.getElementById('serverError');
+
+        function validateEmail(value) {
+            // Basic email pattern
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        }
+
+        function validateContact(value) {
+            if (!value) return true; // optional field
+            const digits = value.replace(/\D/g, '');
+            return digits.length === 10;
+        }
+
+        function validatePasswords(pw, confirm) {
+            if (!pw || pw.length < 6) return { ok: false, message: 'Password must be at least 6 characters' };
+            if (pw !== confirm) return { ok: false, message: 'Passwords do not match' };
+            return { ok: true };
+        }
+
+        function setFieldError(el, msgElId, message) {
+            const msgEl = document.getElementById(msgElId);
+            if (message) {
+                el.classList.add('input-error');
+                msgEl.style.display = 'block';
+                msgEl.textContent = message;
+            } else {
+                el.classList.remove('input-error');
+                msgEl.style.display = 'none';
+                msgEl.textContent = '';
+            }
+        }
+
+        function updateFormValidity() {
+            serverErrorEl.style.display = 'none';
+
+            const emailVal = emailEl.value.trim();
+            const contactVal = contactEl.value.trim();
+            const pwVal = passwordEl.value;
+            const confirmVal = confirmEl.value;
+
+            // Email
+            if (!validateEmail(emailVal)) {
+                setFieldError(emailEl, 'emailError', 'Please enter a valid email address');
+            } else {
+                setFieldError(emailEl, 'emailError', '');
+            }
+
+            // Contact
+            if (!validateContact(contactVal)) {
+                setFieldError(contactEl, 'contactError', 'Please enter a 10-digit phone number (digits only)');
+            } else {
+                setFieldError(contactEl, 'contactError', '');
+            }
+
+            // Passwords
+            const pwCheck = validatePasswords(pwVal, confirmVal);
+            if (!pwCheck.ok) {
+                // Choose which field to attach message to
+                if (pwVal.length < 6) {
+                    setFieldError(passwordEl, 'passwordError', pwCheck.message);
+                    setFieldError(confirmEl, 'confirmError', '');
+                } else {
+                    setFieldError(passwordEl, 'passwordError', '');
+                    setFieldError(confirmEl, 'confirmError', pwCheck.message);
+                }
+            } else {
+                setFieldError(passwordEl, 'passwordError', '');
+                setFieldError(confirmEl, 'confirmError', '');
+            }
+
+            const nameVal = document.getElementById('name').value.trim();
+            const roleVal = document.getElementById('role').value;
+            const formIsValid = validateEmail(emailVal) && validateContact(contactVal) && pwCheck.ok && nameVal !== '' && !!roleVal;
+            submitBtn.disabled = !formIsValid;
+            return formIsValid;
+        }
+
+        // Wire up live validation
+        ['input', 'change'].forEach(ev => {
+            emailEl.addEventListener(ev, updateFormValidity);
+            contactEl.addEventListener(ev, updateFormValidity);
+            passwordEl.addEventListener(ev, updateFormValidity);
+            confirmEl.addEventListener(ev, updateFormValidity);
+            document.getElementById('name').addEventListener(ev, updateFormValidity);
+            document.getElementById('role').addEventListener(ev, updateFormValidity);
+        });
+
+        // Run once on load
+        updateFormValidity();
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const role = document.getElementById('role').value;
+            const contact_info = document.getElementById('contact').value.trim() || null;
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm').value;
+
+            if (password !== confirm) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            const valid = updateFormValidity();
+            if (!valid) return;
+
+            submitBtn.disabled = true;
+
+            const payload = { name, role, contact_info, email, password };
+
+            try {
+                // use apiCall helper so errors are consistent
+                const res = await apiCall('/users', 'POST', payload);
+
+                if (res && res.id) {
+                    alert('Account created successfully — please login.');
+                    window.location.href = 'login.html';
+                } else {
+                    alert('Account created. Please login.');
+                    window.location.href = 'login.html';
+                }
+            } catch (err) {
+                submitBtn.disabled = false;
+                const message = err.message || String(err);
+                serverErrorEl.style.display = 'block';
+                serverErrorEl.textContent = message.includes('Duplicate') ? 'An account with this email already exists.' : ('Sign up failed: ' + message);
+            }
+        });
+    </script>
+</body>
+</html>

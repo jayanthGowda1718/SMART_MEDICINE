@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Smart Medicine Reminder</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Smart Medicine Reminder</h1>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="users.html">Users</a>
+                <a href="medicines.html">Medicines</a>
+                <a href="schedules.html">Schedules</a>
+                <a href="notifications.html">Notifications</a>
+                <a href="logs.html">Logs</a>
+                <a href="doctor.html">Doctor</a>
+                <a href="messages.html">Messages</a>
+                <a href="appointments.html">Appointments</a>
+                <span id="userInfo" style="color:white; margin-left:auto; margin-right:15px;"></span>
+                <button onclick="logout()" style="padding:8px 16px; font-size:14px; background:#f5576c;">Logout</button>
+            </nav>
+        </header>
+
+        <main>
+            <h2>Messages</h2>
+
+            <div class="form-container">
+                <label for="conversation_select">Conversation:</label>
+                <select id="conversation_select">
+                    <option value="">Select a person</option>
+                </select>
+            </div>
+
+            <div id="chatWindow" style="background:white; border-radius:10px; padding:15px; min-height:150px; max-height:320px; overflow-y:auto; margin:15px 0;">
+                <p class="loading">Select a conversation above.</p>
+            </div>
+
+            <form id="sendMessageForm" style="display:flex; gap:10px; margin:15px 0;">
+                <input type="text" id="messageText" placeholder="Type a message..." style="flex:1;" required>
+                <button type="submit">Send</button>
+            </form>
+
+        </main>
+    </div>
+
+    <script src="js/config.js?v=2"></script>
+    <script>checkAuth();</script>
+    <script src="js/messages.js"></script>
+    <script src="js/medicine-bot.js?v=3"></script>
+</body>
+</html>

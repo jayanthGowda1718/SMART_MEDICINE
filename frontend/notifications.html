@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Smart Medicine Reminder</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Smart Medicine Reminder</h1>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="users.html">Users</a>
+                <a href="medicines.html">Medicines</a>
+                <a href="schedules.html">Schedules</a>
+                <a href="notifications.html">Notifications</a>
+                <a href="logs.html">Logs</a>
+                <a href="doctor.html">Doctor</a>
+                <a href="messages.html">Messages</a>
+                <a href="appointments.html">Appointments</a>
+                <span id="userInfo" style="color:white; margin-left:auto; margin-right:15px;"></span>
+                <button onclick="logout()" style="padding:8px 16px; font-size:14px; background:#f5576c;">Logout</button>
+            </nav>
+        </header>
+
+
+        <main>
+            <h2>Notifications</h2>
+
+            <!-- Set Notification Form -->
+            <div class="form-container">
+                <h3>Set Notification</h3>
+                <form id="addNotificationForm">
+                    <div class="form-group">
+                        <label for="schedule_id">Schedule (User - Medicine - Time - Day):</label>
+                        <select id="schedule_id" required>
+                            <option value="">Select Schedule</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type:</label>
+                        <select id="type" required>
+                            <option value="">Select Type</option>
+                            <option value="reminder">Reminder</option>
+                            <option value="alert">Alert</option>
+                            <option value="info">Info</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message (auto-generated from the schedule):</label>
+                        <p id="messagePreview" style="font-style:italic;">Select a schedule above...</p>
+                    </div>
+                    <button type="submit">Set Notification</button>
+                </form>
+            </div>
+
+            <!-- Notifications Table -->
+            <h3>All Notifications</h3>
+            <table id="notificationsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Message</th>
+                        <th>Type</th>
+                        <th>Sent Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="5" class="loading">Loading notifications...</td></tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <script src="js/config.js?v=2"></script>
+    <script>checkAuth();</script>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/medicine-bot.js?v=3"></script>
+
+</body>
+</html>

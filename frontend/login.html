@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Smart Medicine Reminder</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-box h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .login-box .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        .demo-credentials {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        
+        .demo-credentials h4 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        
+        .demo-credentials p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>🏥 Medicine Reminder</h1>
+            <h2 style="text-align:center; color:#666; font-size:18px; margin-bottom:30px;">Login to Continue</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit">Login</button>
+            </form>
+            
+            <div class="demo-credentials">
+                <h4>Demo Credentials:</h4>
+                <p><strong>Patient:</strong> john@example.com / password1</p>
+                <p><strong>Caregiver:</strong> carey@example.com / password3</p>
+                <p><strong>Doctor:</strong> gregory@example.com / password123</p>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <p style="color: #666;">Don't have an account?</p>
+                <a id="createAccountLink" href="./signup.html" style="color: #667eea; font-weight: 600; text-decoration: none;">Create New Account →</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/config.js?v=2"></script>
+    <script>
+        // Check whether the saved login still has a valid server session.
+        async function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/check-session`, {
+                    credentials: 'include'
+                });
+                const session = await response.json();
+                if (session.logged_in) {
+                    window.location.href = 'index.html';
+                } else {
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('isLoggedIn');
+                }
+            } catch (error) {
+                console.error('Session check failed:', error);
+            }
+        }
+        
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const loginData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            // Basic validation
+            function validateEmailSimple(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+            if (!validateEmailSimple(loginData.email)) { showAlert('Enter a valid email address', 'error'); return; }
+            if (!loginData.password) { showAlert('Password cannot be empty', 'error'); return; }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(loginData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Store user info in localStorage
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    // Redirect immediately WITHOUT alert
+                    window.location.href = 'index.html';
+                } else {
+                    alert(data.error || 'Login failed');
+                }
+            } catch (error) {
+                alert('Error connecting to server: ' + error.message);
+            }
+        });
+        
+        // Check session on page load
+        checkLogin();
+
+        // Make the "Create New Account" link robust in case a browser or other script blocks navigation.
+        const createLink = document.getElementById('createAccountLink');
+        if (createLink) {
+            createLink.addEventListener('click', function (e) {
+                // If user is already logged in checkLogin() redirects away immediately; otherwise navigate to the signup page.
+                e.preventDefault();
+                window.location.href = createLink.getAttribute('href') || './signup.html';
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments - Smart Medicine Reminder</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Smart Medicine Reminder</h1>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="users.html">Users</a>
+                <a href="medicines.html">Medicines</a>
+                <a href="schedules.html">Schedules</a>
+                <a href="notifications.html">Notifications</a>
+                <a href="logs.html">Logs</a>
+                <a href="doctor.html">Doctor</a>
+                <a href="messages.html">Messages</a>
+                <a href="appointments.html">Appointments</a>
+                <span id="userInfo" style="color:white; margin-left:auto; margin-right:15px;"></span>
+                <button onclick="logout()" style="padding:8px 16px; font-size:14px; background:#f5576c;">Logout</button>
+            </nav>
+        </header>
+
+        <main>
+            <h2>Appointments</h2>
+
+            <div id="requestFormContainer" class="form-container" style="display:none;">
+                <h3>Request an Appointment</h3>
+                <form id="requestAppointmentForm">
+                    <div class="form-group">
+                        <label for="patient_id">Family Member:</label>
+                        <select id="patient_id" required>
+                            <option value="">Select Family Member</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="doctor_id">Doctor:</label>
+                        <select id="doctor_id" required>
+                            <option value="">Select Doctor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="requested_date">Date:</label>
+                        <input type="date" id="requested_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="requested_time">Time:</label>
+                        <input type="time" id="requested_time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes (optional):</label>
+                        <textarea id="notes" rows="2"></textarea>
+                    </div>
+                    <button type="submit">Request Appointment</button>
+                </form>
+            </div>
+
+            <h3 id="listHeading">Your Appointments</h3>
+            <table id="appointmentsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th id="colOtherParty">Doctor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Notes</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="7" class="loading">Loading appointments...</td></tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <script src="js/config.js?v=2"></script>
+    <script>checkAuth();</script>
+    <script src="js/appointments.js"></script>
+    <script src="js/medicine-bot.js?v=3"></script>
+</body>
+</html>
