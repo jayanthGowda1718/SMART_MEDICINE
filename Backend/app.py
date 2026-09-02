@@ -1040,6 +1040,7 @@ def get_family_schedules():
 # ============================================================
 
 GRACE_MINUTES = int(os.environ.get('MISSED_DOSE_GRACE_MINUTES', 30))
+REALERT_INTERVAL_MINUTES = int(os.environ.get('REMINDER_REALERT_INTERVAL_MINUTES', 5))
 
 # Accepts "Wed", "wed", "Wednesday", "WEDNESDAY" â€” anything reasonable â€”
 # and normalizes it to the canonical 3-letter form used for matching.
@@ -1124,6 +1125,60 @@ def _sweep_due_reminders():
                 pass
 
 
+def _sweep_repeat_alerts():
+    """Paper section 8.3: repeat the alert at intervals for doses still
+    pending and still inside the grace window, instead of alerting once
+    and going silent until the missed-dose sweep fires."""
+    now = datetime.now()
+    grace_cutoff = now - timedelta(minutes=GRACE_MINUTES)
+    realert_cutoff = now - timedelta(minutes=REALERT_INTERVAL_MINUTES)
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Pending doses still inside their grace window
+        cursor.execute("""
+            SELECT il.id, il.user_id, il.medicine_id, m.name, m.dosage
+            FROM IntakeLogs il
+            JOIN Medicines m ON m.id = il.medicine_id
+            WHERE il.status = 'pending' AND il.scheduled_time > %s
+        """, (grace_cutoff,))
+        still_pending = cursor.fetchall()
+
+        for log_id, user_id, medicine_id, medicine_name, dosage in still_pending:
+            # Don't re-alert if we already sent one for this dose recently.
+            # We tie a re-alert Notification to its IntakeLog by matching
+            # user_id + a message referencing the same medicine, sent after
+            # the last realert_cutoff window.
+            cursor.execute("""
+                SELECT id FROM Notifications
+                WHERE user_id=%s AND type='reminder'
+                  AND message LIKE %s
+                  AND sent_time > %s
+                ORDER BY sent_time DESC LIMIT 1
+            """, (user_id, f"%%{medicine_name}%%", realert_cutoff))
+            if cursor.fetchone():
+                continue  # already re-alerted recently enough
+
+            message = f"Reminder: please take {medicine_name} ({dosage})" if dosage else f"Reminder: please take {medicine_name}"
+            cursor.execute("""
+                INSERT INTO Notifications (user_id, message, type)
+                VALUES (%s, %s, 'reminder')
+            """, (user_id, message))
+
+        conn.commit()
+    except Exception as e:
+        print(f"[reminder-engine] sweep_repeat_alerts error: {e}")
+    finally:
+        if conn:
+            try:
+                cursor.close(); conn.close()
+            except Exception:
+                pass
+
+
 def _sweep_missed_doses():
     """Any 'pending' dose older than GRACE_MINUTES becomes 'missed',
     and alerts go to the patient AND their caregiver (if any)."""
@@ -1168,6 +1223,7 @@ def _sweep_missed_doses():
 
 def _reminder_engine_tick():
     _sweep_due_reminders()
+    _sweep_repeat_alerts()
     _sweep_missed_doses()
 
 
