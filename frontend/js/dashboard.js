@@ -85,9 +85,16 @@ async function loadAdherenceSummary() {
     try {
         const summary = await apiCall(`/my-adherence-summary?user_id=${user.id}`);
 
-        document.getElementById('adherence_taken_pct').textContent = `${summary.overall_percent.taken}%`;
-        document.getElementById('adherence_missed_pct').textContent = `${summary.overall_percent.missed}%`;
-        document.getElementById('adherence_pending_pct').textContent = `${summary.overall_percent.pending}%`;
+        // If no intake logs exist, show "No data yet" instead of "0%"
+        if (summary.total_logs === 0) {
+            document.getElementById('adherence_taken_pct').textContent = 'No data yet';
+            document.getElementById('adherence_missed_pct').textContent = 'No data yet';
+            document.getElementById('adherence_pending_pct').textContent = 'No data yet';
+        } else {
+            document.getElementById('adherence_taken_pct').textContent = `${summary.overall_percent.taken}%`;
+            document.getElementById('adherence_missed_pct').textContent = `${summary.overall_percent.missed}%`;
+            document.getElementById('adherence_pending_pct').textContent = `${summary.overall_percent.pending}%`;
+        }
 
         const tbody = document.querySelector('#adherenceTable tbody');
         tbody.innerHTML = '';
