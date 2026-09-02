@@ -934,6 +934,73 @@ def get_my_intake_logs():
     finally:
         cursor.close(); conn.close()
 
+@app.route('/my-adherence-summary', methods=['GET'])
+@login_required
+def get_my_adherence_summary():
+    """Aggregate adherence stats for the paper's Reporting/Analytics module:
+    overall taken/missed/pending %, plus a per-medicine breakdown."""
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return {'error': 'User ID required'}, 400
+    if not is_authorized_for_user(user_id):
+        return {'error': 'Forbidden: not your data'}, 403
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Overall counts
+        cursor.execute("""
+            SELECT status, COUNT(*) FROM IntakeLogs
+            WHERE user_id=%s
+            GROUP BY status
+        """, (user_id,))
+        overall_rows = cursor.fetchall()
+        overall = {'taken': 0, 'missed': 0, 'pending': 0}
+        for status, count in overall_rows:
+            overall[status] = count
+        total = sum(overall.values())
+        overall_percent = {
+            k: round((v / total) * 100, 1) if total else 0.0
+            for k, v in overall.items()
+        }
+
+        # Per-medicine breakdown
+        cursor.execute("""
+            SELECT m.id, m.name, il.status, COUNT(*)
+            FROM IntakeLogs il
+            JOIN Medicines m ON m.id = il.medicine_id
+            WHERE il.user_id=%s
+            GROUP BY m.id, m.name, il.status
+        """, (user_id,))
+        per_med_rows = cursor.fetchall()
+
+        per_medicine = {}
+        for med_id, med_name, status, count in per_med_rows:
+            if med_id not in per_medicine:
+                per_medicine[med_id] = {
+                    'medicine_id': med_id, 'medicine_name': med_name,
+                    'taken': 0, 'missed': 0, 'pending': 0
+                }
+            per_medicine[med_id][status] = count
+
+        per_medicine_list = []
+        for entry in per_medicine.values():
+            med_total = entry['taken'] + entry['missed'] + entry['pending']
+            entry['total'] = med_total
+            entry['adherence_percent'] = round((entry['taken'] / med_total) * 100, 1) if med_total else 0.0
+            per_medicine_list.append(entry)
+
+        return jsonify({
+            'overall_counts': overall,
+            'overall_percent': overall_percent,
+            'total_logs': total,
+            'per_medicine': per_medicine_list
+        })
+    except Exception as e:
+        return {'error': str(e)}, 500
+    finally:
+        cursor.close(); conn.close()
+
 @app.route('/my-family', methods=['GET'])
 @login_required
 def get_my_family():

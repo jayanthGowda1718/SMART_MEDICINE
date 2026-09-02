@@ -76,6 +76,42 @@ async function refreshPillBoxStatusCard() {
 
 setInterval(refreshPillBoxStatusCard, 30000);
 
+// Loads and renders the adherence analytics section (paper's
+// Reporting/Analytics module): overall % + per-medicine breakdown.
+async function loadAdherenceSummary() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.id) return;
+
+    try {
+        const summary = await apiCall(`/my-adherence-summary?user_id=${user.id}`);
+
+        document.getElementById('adherence_taken_pct').textContent = `${summary.overall_percent.taken}%`;
+        document.getElementById('adherence_missed_pct').textContent = `${summary.overall_percent.missed}%`;
+        document.getElementById('adherence_pending_pct').textContent = `${summary.overall_percent.pending}%`;
+
+        const tbody = document.querySelector('#adherenceTable tbody');
+        tbody.innerHTML = '';
+
+        if (summary.per_medicine.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">No intake data yet.</td></tr>';
+            return;
+        }
+
+        summary.per_medicine.forEach(med => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${med.medicine_name}</td>
+                <td>${med.taken}</td>
+                <td>${med.missed}</td>
+                <td>${med.pending}</td>
+                <td>${med.adherence_percent}%</td>
+            `;
+        });
+    } catch (error) {
+        console.error('Could not load adherence summary:', error);
+    }
+}
+
 // Load dashboard data
 async function loadDashboard() {
     try {
@@ -171,6 +207,7 @@ if (typeof io === 'function' && window.ENABLE_SOCKET_IO) {
 // Load on page load
 loadDashboard();
 refreshPillBoxStatusCard();
+loadAdherenceSummary();
 
 // Smart Pill Box Simulation Handler (Flowchart Logic)
 async function runPillBoxSimulation() {
