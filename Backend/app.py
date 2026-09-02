@@ -1148,21 +1148,19 @@ def _sweep_repeat_alerts():
         still_pending = cursor.fetchall()
 
         for log_id, user_id, medicine_id, medicine_name, dosage in still_pending:
-            # Don't re-alert if we already sent one for this dose recently.
-            # We tie a re-alert Notification to its IntakeLog by matching
-            # user_id + a message referencing the same medicine, sent after
-            # the last realert_cutoff window.
+            message = f"Reminder: please take {medicine_name} ({dosage})" if dosage else f"Reminder: please take {medicine_name}"
+
+            # Exact-match dedupe (not LIKE) so "Metformin" and "Metformin XR"
+            # can never collide with each other's recent notifications.
             cursor.execute("""
                 SELECT id FROM Notifications
                 WHERE user_id=%s AND type='reminder'
-                  AND message LIKE %s
+                  AND message = %s
                   AND sent_time > %s
                 ORDER BY sent_time DESC LIMIT 1
-            """, (user_id, f"%%{medicine_name}%%", realert_cutoff))
+            """, (user_id, message, realert_cutoff))
             if cursor.fetchone():
-                continue  # already re-alerted recently enough
-
-            message = f"Reminder: please take {medicine_name} ({dosage})" if dosage else f"Reminder: please take {medicine_name}"
+                continue
             cursor.execute("""
                 INSERT INTO Notifications (user_id, message, type)
                 VALUES (%s, %s, 'reminder')
